@@ -10,6 +10,7 @@ import '../services/notification_service.dart';
 import '../services/calendar_service.dart';
 import '../widgets/background_wrapper.dart';
 import '../widgets/custom_date_time_picker.dart';
+import '../widgets/window_controls.dart';
 
 /// 添加/编辑待办页面
 class AddEditTodoScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,7 @@ class AddEditTodoScreen extends ConsumerStatefulWidget {
 class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  DateTime _selectedDateTime = DateTime.now();
+  DateTime _selectedDateTime = DateTime.now().add(const Duration(minutes: 5));
   bool _isReminder = false;
   bool _isSaving = false;
   Todo? _editingTodo;
@@ -37,7 +38,9 @@ class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
       _editingTodo = args;
       _titleController.text = args.title;
       _descriptionController.text = args.description ?? '';
-      _selectedDateTime = args.dateTime;
+      // 编辑模式：如果待办时间已过去，则默认设为当前 + 5分钟
+      final minTime = DateTime.now().add(const Duration(minutes: 5));
+      _selectedDateTime = args.dateTime.isBefore(minTime) ? minTime : args.dateTime;
       _isReminder = args.isReminder;
     }
   }
@@ -75,6 +78,9 @@ class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
             ),
           ),
           centerTitle: true,
+          actions: [
+            WindowControls(isDark: isDark),
+          ],
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -282,6 +288,20 @@ class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
         SnackBar(
           content: const Text('请输入待办事项标题'),
           backgroundColor: AppColors.error,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    // 时间必须至少是当前时间 + 5分钟
+    final minAllowed = DateTime.now().add(const Duration(minutes: 5));
+    if (_selectedDateTime.isBefore(minAllowed)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('请选择当前时间 5 分钟之后的时间'),
+          backgroundColor: AppColors.warning,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           behavior: SnackBarBehavior.floating,
         ),

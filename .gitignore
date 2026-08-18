@@ -54,3 +54,6 @@ app.*.map.json
 windows/flutter/generated_*
 linux/flutter/generated_*
 macos/Flutter/GeneratedPluginRegistrant.*
+
+# Deploy guide (not for git)
+.deploy.md

@@ -11,6 +11,7 @@ import '../core/constants.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/background_wrapper.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/window_controls.dart';
 
 /// 设置页面
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -49,6 +50,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           centerTitle: true,
+          actions: [
+            WindowControls(isDark: isDark),
+          ],
         ),
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

@@ -79,10 +79,13 @@ class CustomDateTimePicker extends StatelessWidget {
   }
 
   Future<void> _pickDateTime(BuildContext context) async {
+    final now = DateTime.now();
+    final minDate = now.subtract(const Duration(minutes: 1)); // 允许当天
+
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDateTime,
-      firstDate: DateTime(2020),
+      initialDate: selectedDateTime.isBefore(minDate) ? now : selectedDateTime,
+      firstDate: DateTime(now.year, now.month, now.day),
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
@@ -115,14 +118,20 @@ class CustomDateTimePicker extends StatelessWidget {
 
     if (pickedTime == null) return;
 
-    onChanged(
-      DateTime(
-        pickedDate.year,
-        pickedDate.month,
-        pickedDate.day,
-        pickedTime.hour,
-        pickedTime.minute,
-      ),
+    final result = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
     );
+
+    // 确保选择的时间至少是当前时间 + 5分钟
+    final minAllowed = DateTime.now().add(const Duration(minutes: 5));
+    if (result.isBefore(minAllowed)) {
+      onChanged(minAllowed);
+    } else {
+      onChanged(result);
+    }
   }
 }

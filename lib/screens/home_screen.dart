@@ -6,6 +6,7 @@ import '../core/constants.dart';
 import '../providers/todo_provider.dart';
 import '../widgets/background_wrapper.dart';
 import '../widgets/animated_todo_list.dart';
+import '../widgets/window_controls.dart';
 
 /// 主页 - 待办列表
 class HomeScreen extends ConsumerWidget {
@@ -81,6 +82,7 @@ class HomeScreen extends ConsumerWidget {
                 Navigator.of(context).pushNamed('/settings');
               },
             ),
+            WindowControls(isDark: isDark),
           ],
         ),
         body: const AnimatedTodoList(),
