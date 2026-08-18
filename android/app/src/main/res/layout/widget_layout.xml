@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/widget_background"
+    android:padding="12dp">
+
+    <!-- 应用名称 -->
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="抓虾"
+        android:textSize="14sp"
+        android:textColor="#999999"
+        android:textStyle="bold" />
+
+    <!-- 待办数量 -->
+    <TextView
+        android:id="@+id/widget_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="36sp"
+        android:textColor="#6C63FF"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp" />
+
+    <!-- 标签 -->
+    <TextView
+        android:id="@+id/widget_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="项待办"
+        android:textSize="12sp"
+        android:textColor="#AAAAAA" />
+
+</LinearLayout>
