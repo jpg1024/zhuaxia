@@ -49,6 +49,7 @@ app.*.map.json
 *.apk
 *.aab
 *.exe
+build_log.txt
 
 # Generated plugin files (will be regenerated)
 windows/flutter/generated_*

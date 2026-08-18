@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import androidx.preference.PreferenceManager
 
 /**
  * 桌面小组件：显示待办事项数量
