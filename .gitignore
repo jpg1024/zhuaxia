@@ -57,3 +57,4 @@ macos/Flutter/GeneratedPluginRegistrant.*
 
 # Deploy guide (not for git)
 .deploy.md
+_build_exe_apk.bat
