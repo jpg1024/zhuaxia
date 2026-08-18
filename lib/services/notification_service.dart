@@ -5,10 +5,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
-import 'package:windows_notification/windows_notification.dart';
-import 'package:windows_notification/notification_message.dart';
+import 'package:window_manager/window_manager.dart';
 import '../models/todo.dart';
 import '../core/extensions.dart';
+import 'reminder_center.dart';
 
 /// 本地通知服务
 class NotificationService {
@@ -19,7 +19,6 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   bool _initialized = false;
   Timer? _windowsCheckTimer;
-  WindowsNotification? _winNotify;
 
   /// 初始化通知服务
   Future<void> initialize() async {
@@ -32,20 +31,10 @@ class NotificationService {
       const initSettings = InitializationSettings(android: androidSettings);
       await _plugin.initialize(initSettings);
     } else if (Platform.isWindows) {
-      _initWindowsNotifications();
       _startWindowsScheduler();
     }
 
     _initialized = true;
-  }
-
-  /// 初始化 Windows 通知
-  void _initWindowsNotifications() {
-    try {
-      _winNotify = WindowsNotification(applicationId: 'com.zhuaxia.zhuaxia');
-    } catch (e) {
-      debugPrint('Windows 通知初始化失败: $e');
-    }
   }
 
   /// 请求通知权限（Android 13+）
@@ -200,18 +189,19 @@ class NotificationService {
     }
   }
 
-  /// 显示 Windows 桌面 Toast 通知
+  /// 显示 Windows 右下角提醒弹窗（不自动消失，用户手动关闭）
   void _showWindowsNotification(String title, DateTime dateTime) {
-    if (_winNotify == null) return;
     try {
-      final message = NotificationMessage.fromPluginTemplate(
-        DateTime.now().millisecondsSinceEpoch.toString(),
-        '抓虾 - $title',
-        '提醒时间: ${dateTime.formattedShort}',
-      );
-      _winNotify!.showNotificationPluginTemplate(message);
+      ReminderCenter.instance.add(ReminderItem(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        title: title,
+        message: '提醒时间: ${dateTime.formattedShort}',
+      ));
+      // 若窗口在托盘隐藏，先显示到前台
+      windowManager.show();
+      windowManager.focus();
     } catch (e) {
-      debugPrint('Windows 通知发送失败: $e');
+      debugPrint('Windows 提醒显示失败: $e');
     }
   }
 

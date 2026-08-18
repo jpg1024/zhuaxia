@@ -29,7 +29,6 @@ dependencies:
   permission_handler: ^11.4.0
   flutter_svg: ^2.0.17
   timezone: ^0.9.4
-  windows_notification: ^1.2.0
 
 dev_dependencies:
   flutter_test:

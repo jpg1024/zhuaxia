@@ -1,11 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:window_manager/window_manager.dart';
 import '../core/theme/app_colors.dart';
 import '../core/constants.dart';
 import '../providers/todo_provider.dart';
 import '../widgets/background_wrapper.dart';
 import '../widgets/animated_todo_list.dart';
+import '../widgets/reminder_overlay.dart';
 import '../widgets/window_controls.dart';
 
 /// 主页 - 待办列表
@@ -25,26 +28,33 @@ class HomeScreen extends ConsumerWidget {
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.only(left: 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.primary,
-                  size: 28,
-                ),
-              ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/icons/app_icon.png',
+                width: 28,
+                height: 28,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                AppConstants.appName,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? AppColors.textLight : AppColors.textDark,
+              // 长按标题可拖动窗口（Windows 无边框窗口）
+              GestureDetector(
+                onLongPress: () {
+                  if (Platform.isWindows) {
+                    windowManager.startDragging();
+                  }
+                },
+                child: Text(
+                  AppConstants.appName,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? AppColors.textLight : AppColors.textDark,
+                  ),
                 ),
               ),
             ],
@@ -85,7 +95,17 @@ class HomeScreen extends ConsumerWidget {
             WindowControls(isDark: isDark),
           ],
         ),
-        body: const AnimatedTodoList(),
+        body: Stack(
+          children: [
+            const AnimatedTodoList(),
+            // 右下角提醒弹窗（避开 FAB，悬浮在其上方）
+            Positioned(
+              right: 16,
+              bottom: 88,
+              child: const ReminderOverlay(),
+            ),
+          ],
+        ),
         floatingActionButton: _buildFab(context),
       ),
     );

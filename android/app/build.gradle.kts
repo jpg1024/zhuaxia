@@ -28,6 +28,13 @@ android {
 
     buildTypes {
         release {
+            // R8 压缩 + 自定义 proguard 规则（flutter_local_notifications 泛型保留）
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
