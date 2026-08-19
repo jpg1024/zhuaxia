@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
-import 'package:window_manager/window_manager.dart';
 import '../models/todo.dart';
 import '../core/extensions.dart';
-import 'reminder_center.dart';
 
 /// 本地通知服务
 class NotificationService {
@@ -31,6 +30,8 @@ class NotificationService {
       const initSettings = InitializationSettings(android: androidSettings);
       await _plugin.initialize(initSettings);
     } else if (Platform.isWindows) {
+      // 初始化 Windows 系统通知（Toast，右下角弹出）
+      await LocalNotifier.instance.setup(appName: '抓虾');
       _startWindowsScheduler();
     }
 
@@ -189,19 +190,18 @@ class NotificationService {
     }
   }
 
-  /// 显示 Windows 右下角提醒弹窗（不自动消失，用户手动关闭）
+  /// 显示 Windows 系统右下角 Toast 通知（系统通知中心，非应用内弹窗）
   void _showWindowsNotification(String title, DateTime dateTime) {
     try {
-      ReminderCenter.instance.add(ReminderItem(
-        id: DateTime.now().microsecondsSinceEpoch.toString(),
-        title: title,
-        message: '提醒时间: ${dateTime.formattedShort}',
-      ));
-      // 若窗口在托盘隐藏，先显示到前台
-      windowManager.show();
-      windowManager.focus();
+      LocalNotifier.instance.notify(
+        LocalNotification(
+          title: title,
+          body: '提醒时间: ${dateTime.formattedShort}',
+          silent: false,
+        ),
+      );
     } catch (e) {
-      debugPrint('Windows 提醒显示失败: $e');
+      debugPrint('Windows 系统通知显示失败: $e');
     }
   }
 

@@ -23,6 +23,11 @@ class TodoItemCard extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isCompleted = todo.isCompleted;
     final isExpired = todo.dateTime.isPast && !isCompleted;
+    // 过期/已完成统一使用灰色调
+    final dimmed = isCompleted || isExpired;
+    final dimColor = isDark
+        ? Colors.white.withValues(alpha: 0.35)
+        : Colors.grey.shade500;
 
     return Animate(
       effects: const [
@@ -69,15 +74,11 @@ class TodoItemCard extends ConsumerWidget {
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
-                    gradient: isCompleted
+                    gradient: dimmed
                         ? LinearGradient(
                             colors: [Colors.grey.shade400, Colors.grey.shade300],
                           )
-                        : isExpired
-                            ? const LinearGradient(
-                                colors: [AppColors.error, AppColors.warning],
-                              )
-                            : AppColors.primaryGradient,
+                        : AppColors.primaryGradient,
                   ),
                 ),
                 // 完成勾选
@@ -127,13 +128,11 @@ class TodoItemCard extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? (isCompleted
-                                    ? Colors.white.withValues(alpha: 0.5)
-                                    : AppColors.textLight)
-                                : (isCompleted
-                                    ? AppColors.textDarkSecondary
-                                    : AppColors.textDark),
+                            color: dimmed
+                                ? dimColor
+                                : isDark
+                                    ? AppColors.textLight
+                                    : AppColors.textDark,
                             decoration: isCompleted
                                 ? TextDecoration.lineThrough
                                 : TextDecoration.none,
@@ -146,8 +145,8 @@ class TodoItemCard extends ConsumerWidget {
                             Icon(
                               Icons.access_time_rounded,
                               size: 14,
-                              color: isExpired
-                                  ? AppColors.error
+                              color: dimmed
+                                  ? dimColor
                                   : isDark
                                       ? AppColors.textLightSecondary
                                       : AppColors.textDarkSecondary,
@@ -157,14 +156,12 @@ class TodoItemCard extends ConsumerWidget {
                               todo.dateTime.formattedShort,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: isExpired
-                                    ? AppColors.error
+                                color: dimmed
+                                    ? dimColor
                                     : isDark
                                         ? AppColors.textLightSecondary
                                         : AppColors.textDarkSecondary,
-                                fontWeight: isExpired
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                             if (todo.isReminder) ...[

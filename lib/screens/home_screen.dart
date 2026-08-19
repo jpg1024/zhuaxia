@@ -26,18 +26,21 @@ class HomeScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                'assets/icons/app_icon.png',
-                width: 28,
-                height: 28,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          // Windows 端不显示 logo（无边框窗口，顶部左侧留空），Android 保留
+          leading: Platform.isWindows
+              ? null
+              : Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      'assets/icons/app_icon.png',
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

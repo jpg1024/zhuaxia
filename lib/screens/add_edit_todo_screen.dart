@@ -325,13 +325,21 @@ class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
         );
         await ref.read(todoProvider.notifier).updateTodo(updated);
 
-        // 更新通知
-        await NotificationService.instance.cancelTodoReminder(_editingTodo!.id);
-        await NotificationService.instance.scheduleTodoReminder(updated);
+        // 更新通知（失败不影响保存结果）
+        try {
+          await NotificationService.instance.cancelTodoReminder(_editingTodo!.id);
+          await NotificationService.instance.scheduleTodoReminder(updated);
+        } catch (notifyErr) {
+          debugPrint('更新通知失败: $notifyErr');
+        }
 
-        // 更新日历事件
+        // 更新日历事件（失败不影响保存结果）
         if (Platform.isAndroid && _isReminder) {
-          await CalendarService.instance.updateCalendarEvent(updated);
+          try {
+            await CalendarService.instance.updateCalendarEvent(updated);
+          } catch (calErr) {
+            debugPrint('更新日历事件失败: $calErr');
+          }
         }
       } else {
         // 新增
@@ -358,8 +366,12 @@ class _AddEditTodoScreenState extends ConsumerState<AddEditTodoScreen> {
         final finalTodo = todo.copyWith(calendarEventId: calendarEventId);
         await ref.read(todoProvider.notifier).addTodo(finalTodo);
 
-        // 安排通知
-        await NotificationService.instance.scheduleTodoReminder(finalTodo);
+        // 安排通知（失败不影响保存结果）
+        try {
+          await NotificationService.instance.scheduleTodoReminder(finalTodo);
+        } catch (notifyErr) {
+          debugPrint('安排通知失败: $notifyErr');
+        }
       }
 
       // 保存成功后，检查精确闹钟权限并弹窗提醒用户授权
